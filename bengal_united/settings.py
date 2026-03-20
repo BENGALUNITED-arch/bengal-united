@@ -160,4 +160,11 @@ JAZZMIN_UI_TWEAKS = {
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": True,
+}# --- PERMANENT IMAGE STORAGE (CLOUDINARY) ---
+import os
+
+CLOUDINARY_STORAGE = {
+    'CLOUDINARY_URL': 'cloudinary://722655611189288:PASTE_YOUR_ACTUAL_SECRET_HERE@dzegy28se'
 }
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
