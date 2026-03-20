@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Programs | Bengal United</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#0A1A2F', accent: '#00ADEF', secondary: '#101C2C', textlight: '#F5F7FA' }, fontFamily: { heading: ['"Bebas Neue"', 'sans-serif'], body: ['Inter', 'sans-serif'], } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-primary text-textlight font-body overflow-x-hidden antialiased">
+
+    <nav class="fixed w-full z-50 bg-[#0A1A2F]/90 backdrop-blur-[10px] border-b border-white/10 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+            <a href="/" class="flex items-center gap-3">
+                {% if settings and settings.logo %}
+                    <img src="{{ settings.logo.url }}" alt="Club Logo" class="h-12 w-auto object-contain">
+                {% else %}
+                    <i class="fas fa-shield-alt text-4xl text-accent"></i>
+                {% endif %}
+                <span class="font-heading text-3xl tracking-wider text-white hidden md:block">BENGAL <span class="text-accent">UNITED</span></span>
+            </a>
+            <a href="/" class="text-gray-300 hover:text-white font-bold uppercase tracking-widest text-sm flex items-center gap-2 transition-all">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <header class="relative pt-32 pb-16 bg-secondary border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="font-heading text-5xl md:text-7xl text-white mb-4">OUR <span class="text-accent">PROGRAMS</span></h1>
+            <p class="text-gray-400 max-w-2xl mx-auto text-lg">Whether you are starting your journey or pushing for the first team, find the perfect program to elevate your game.</p>
+        </div>
+    </header>
+
+    <main class="py-20 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                
+                {% for program in programs %}
+                <div class="bg-secondary border border-white/5 rounded-sm overflow-hidden hover:border-accent/50 hover:shadow-[0_10px_30px_rgba(0,173,239,0.15)] transition-all duration-300 flex flex-col h-full">
+                    <div class="h-64 relative overflow-hidden group">
+                        {% if program.image %}
+                            <img src="{{ program.image.url }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        {% else %}
+                            <div class="w-full h-full bg-[#0F172A] flex items-center justify-center text-gray-600"><i class="fas fa-futbol fa-3x"></i></div>
+                        {% endif %}
+                        <div class="absolute inset-0 bg-gradient-to-t from-secondary via-transparent to-transparent"></div>
+                    </div>
+                    
+                    <div class="p-8 flex flex-col flex-grow">
+                        <h3 class="font-heading text-3xl text-white mb-3 uppercase">{{ program.title }}</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8 flex-grow whitespace-pre-wrap">{{ program.description }}</p>
+                        
+                        <a href="https://wa.me/{{ settings.whatsapp_number|default:'919830848589' }}?text=Hello! I am interested in joining the {{ program.title }}." target="_blank" class="w-full text-center bg-transparent border-2 border-accent text-accent hover:bg-accent hover:text-white font-bold py-3 rounded-sm uppercase tracking-widest transition-all">
+                            <i class="fab fa-whatsapp mr-2 text-lg"></i> Apply Now
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-full text-center py-16 border-2 border-dashed border-white/10 rounded-sm">
+                    <i class="fas fa-clipboard-list text-5xl text-gray-600 mb-4"></i>
+                    <p class="text-gray-400 text-xl font-medium">New programs are currently being designed. Check back soon!</p>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-primary py-12 text-center text-sm text-gray-500 font-medium border-t border-white/10">
+        <p>© 2026 Bengal United Football Club. Built for Greatness.</p>
+    </footer>
+
+</body>
+</html>

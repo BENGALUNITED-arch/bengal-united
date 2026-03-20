@@ -1,0 +1,69 @@
+/* ==========================================
+   MINIMAL SAAS SIDEBAR (TAILWIND MATCH)
+========================================== */
+
+/* 1. Base Background & Border (Slate 900) */
+.main-sidebar, .main-sidebar::before {
+    background-color: #0F172A !important;
+    border-right: 1px solid #1F2937 !important;
+    box-shadow: none !important;
+}
+
+/* 2. Brand/Logo Area */
+.brand-link {
+    background-color: #0F172A !important;
+    border-bottom: 1px solid #1F2937 !important;
+    color: #F8FAFC !important;
+    font-weight: 700 !important;
+    padding: 1rem !important;
+}
+
+/* 3. Link Default State (Slate 400, Rounded, Spaced) */
+.nav-sidebar .nav-item > .nav-link {
+    color: #94A3B8 !important;
+    border-radius: 8px !important;
+    margin: 4px 16px !important;
+    padding: 10px 16px !important;
+    width: auto !important;
+    transition: all 0.2s ease-in-out !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+}
+
+/* 4. Hover Effect (Slate 800) */
+.nav-sidebar .nav-item > .nav-link:hover {
+    background-color: #1E293B !important;
+    color: #F8FAFC !important;
+    transform: translateX(4px); /* Smooth slight nudge */
+}
+
+/* 5. Highlight Active Page (Blue 500) */
+.nav-sidebar .nav-item > .nav-link.active {
+    background-color: #3B82F6 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* 6. Clean up the Icons */
+.nav-sidebar .nav-link p {
+    display: inline-block;
+    margin: 0 !important;
+}
+.nav-sidebar .nav-link i {
+    color: inherit !important;
+    font-size: 1.1rem !important;
+    margin-right: 12px !important;
+    width: 20px !important;
+    text-align: center;
+    opacity: 0.8;
+}
+
+/* 7. Reduce Clutter (Hide unnecessary AdminLTE artifacts) */
+.user-panel { display: none !important; } /* Hides duplicate user info */
+.form-control-sidebar {
+    background-color: #1E293B !important;
+    border: 1px solid #334155 !important;
+    color: #F8FAFC !important;
+    border-radius: 6px !important;
+}
+.btn-sidebar { background-color: #334155 !important; color: #F8FAFC !important; }

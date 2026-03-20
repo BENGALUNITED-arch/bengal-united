@@ -1,0 +1,203 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    /* ==========================================
+       1. BASIC FORM STYLING (Title & Cover)
+    ========================================== */
+    .form-group { margin-bottom: 1.5rem !important; }
+    .control-label { color: #9CA3AF !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; text-transform: uppercase; font-size: 0.75rem !important; letter-spacing: 0.05em; }
+    input.form-control, .vTextField { background-color: #0F172A !important; border: 1px solid #1F2937 !important; color: #F3F4F6 !important; border-radius: 0.5rem !important; padding: 0.75rem !important; width: 100% !important; }
+    input.form-control:focus { border-color: #3B82F6 !important; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important; }
+    
+    .submit-row { background: transparent !important; border-top: 1px solid #1F2937 !important; padding: 1.5rem 0 0 0 !important; margin-top: 1rem !important; display: flex; gap: 1rem; }
+    .submit-row input[type="submit"] { background-color: #3B82F6 !important; color: white !important; border-radius: 0.5rem !important; padding: 0.75rem 1.5rem !important; font-weight: 600 !important; border: none !important; text-transform: uppercase; }
+    .submit-row input[type="submit"]:hover { background-color: #2563EB !important; cursor: pointer; }
+
+    /* ==========================================
+       2. GALLERY INLINE GRID (The Magic)
+    ========================================== */
+    /* Hide the ugly default table headers */
+    #photos-group thead { display: none !important; }
+    #photos-group table, #photos-group tbody { display: block !important; border: none !important; width: 100% !important; }
+    
+    /* Convert rows into a CSS Grid */
+    #photos-group tbody {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+        gap: 1.5rem !important;
+        padding: 1rem 0 !important;
+    }
+
+    /* Style each inline item as a Drag & Drop Card */
+    #photos-group tr.form-row {
+        display: flex !important;
+        flex-direction: column !important;
+        background: #0F172A !important;
+        border: 2px dashed #374151 !important;
+        border-radius: 12px !important;
+        position: relative !important;
+        aspect-ratio: 1 !important; /* Makes it a perfect square */
+        justify-content: center !important;
+        align-items: center !important;
+        overflow: hidden !important;
+        transition: all 0.2s ease-in-out !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    #photos-group tr.form-row:hover {
+        border-color: #3B82F6 !important;
+        background: #1E293B !important;
+    }
+
+    /* Make the invisible file input stretch over the entire card for Drag & Drop */
+    #photos-group input[type="file"] {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        opacity: 0 !important;
+        cursor: pointer !important;
+        z-index: 10 !important;
+    }
+
+    /* Hover Delete System */
+    .custom-delete-btn {
+        position: absolute !important;
+        top: 10px !important;
+        right: 10px !important;
+        background: rgba(239, 68, 68, 0.9) !important;
+        color: white !important;
+        border-radius: 50% !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 5 !important;
+        opacity: 0 !important;
+        transition: opacity 0.2s !important;
+        pointer-events: none !important;
+    }
+    #photos-group tr.form-row:hover .custom-delete-btn { opacity: 1 !important; }
+    
+    /* Move the real delete checkbox invisibly over the custom trash button */
+    #photos-group td.delete {
+        position: absolute !important;
+        top: 10px !important;
+        right: 10px !important;
+        width: 32px !important;
+        height: 32px !important;
+        z-index: 20 !important;
+        opacity: 0 !important;
+        cursor: pointer !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Clean up Jazzmin artifacts */
+    #photos-group h2 { color: #E5E7EB !important; border-bottom: 1px solid #1F2937 !important; padding-bottom: 1rem !important; }
+    .add-row a { background: #3B82F6 !important; color: white !important; padding: 0.5rem 1rem !important; border-radius: 0.5rem !important; text-decoration: none !important; display: inline-block !important; margin-top: 1rem !important; font-weight: bold !important; }
+    .field-cover_image { display: none; } /* Hide cover image default so JS moves it */
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-[#111827] border border-[#1F2937] p-8 rounded-xl shadow-lg font-sans text-gray-200">
+    <h3 class="text-2xl font-bold text-white mb-6 border-b border-[#1F2937] pb-4 flex items-center">
+        <i class="fas fa-camera-retro text-purple-500 mr-3"></i> Album Manager
+    </h3>
+    
+    <div id="master-form-container">
+        {{ block.super }}
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // --- 1. CLEAN UP THE MAIN ALBUM FIELDS ---
+        const formContainer = document.getElementById("master-form-container");
+        const jazzminCard = formContainer.querySelector(".card");
+        if(jazzminCard) { jazzminCard.style.background = "transparent"; jazzminCard.style.boxShadow = "none"; jazzminCard.style.border = "none"; }
+
+        // --- 2. BUILD THE GRID & DRAG/DROP UI FOR INLINES ---
+        function setupGrid() {
+            const rows = document.querySelectorAll('#photos-group tr.form-row');
+            rows.forEach(row => {
+                if (row.dataset.setup) return;
+                row.dataset.setup = 'true';
+
+                // Add nice UI Placeholder for Drag & Drop
+                const placeholder = document.createElement('div');
+                placeholder.className = 'text-center text-gray-400 z-0 pointer-events-none absolute flex flex-col items-center justify-center inset-0';
+                placeholder.innerHTML = '<i class="fas fa-plus-circle text-3xl mb-2 text-gray-500"></i><span class="text-xs font-bold tracking-widest uppercase">Drop Photo</span>';
+                row.appendChild(placeholder);
+
+                // Add Live Preview Image Element
+                const img = document.createElement('img');
+                img.className = 'absolute inset-0 w-full h-full object-cover z-1 hidden';
+                row.appendChild(img);
+
+                // Check for existing photo
+                const existingLink = row.querySelector('.field-image a');
+                if (existingLink && existingLink.href) {
+                    img.src = existingLink.href;
+                    img.classList.remove('hidden');
+                    placeholder.style.display = 'none';
+                    row.style.borderStyle = 'solid';
+                    row.style.borderColor = '#1F2937';
+                }
+
+                // Listen for file drops / selection
+                const fileInput = row.querySelector('input[type="file"]');
+                if (fileInput) {
+                    fileInput.addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                                img.src = event.target.result;
+                                img.classList.remove('hidden');
+                                placeholder.style.display = 'none';
+                                row.style.borderStyle = 'solid';
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                }
+
+                // Create the beautiful Hover Delete button
+                const deleteTd = row.querySelector('td.delete');
+                if (deleteTd) {
+                    const deleteBtn = document.createElement('div');
+                    deleteBtn.className = 'custom-delete-btn shadow-lg';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash text-sm"></i>';
+                    row.appendChild(deleteBtn);
+                    
+                    // Visual feedback when checkbox is clicked
+                    const checkbox = deleteTd.querySelector('input[type="checkbox"]');
+                    if(checkbox) {
+                        checkbox.addEventListener('change', function() {
+                            if(this.checked) img.style.opacity = '0.3';
+                            else img.style.opacity = '1';
+                        });
+                    }
+                }
+            });
+        }
+
+        // Run setup immediately
+        setupGrid();
+
+        // Run setup again if the admin clicks "Add another Photo"
+        document.body.addEventListener('click', function(e) {
+            if (e.target.closest('.add-row')) {
+                setTimeout(setupGrid, 50); // Small delay to let Django add the row
+            }
+        });
+    });
+</script>
+{% endblock %}

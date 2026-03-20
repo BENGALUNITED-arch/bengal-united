@@ -1,0 +1,46 @@
+{% extends "admin/change_list.html" %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* TRANSFORM TABLE INTO TROPHY CABINET CARDS */
+    table#result_list thead { display: none !important; }
+    table#result_list { display: block !important; border: none !important; background: transparent !important; margin-top: 1.5rem; }
+    
+    table#result_list tbody {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+        gap: 2rem !important;
+        width: 100% !important;
+    }
+
+    table#result_list tr {
+        display: flex !important; flex-direction: column !important;
+        background: linear-gradient(145deg, #111827, #0F172A) !important; 
+        border: 1px solid #1F2937 !important;
+        border-radius: 16px !important; padding: 1.5rem !important; position: relative !important;
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5) !important;
+        transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+        text-align: center !important;
+    }
+    table#result_list tr:hover { 
+        transform: translateY(-8px) !important; 
+        border-color: #FACC15 !important; /* Gold border on hover */
+        box-shadow: 0 15px 25px -5px rgba(250, 204, 21, 0.15) !important; /* Gold glow */
+    }
+
+    table#result_list td, table#result_list th {
+        display: block !important; border: none !important; padding: 0 !important; background: transparent !important; margin-bottom: 0.5rem !important;
+    }
+
+    .action-checkbox { position: absolute !important; top: 1rem !important; right: 1rem !important; z-index: 10; background: rgba(17, 24, 39, 0.8); padding: 4px; border-radius: 4px; }
+    
+    .field-image_preview { margin-bottom: 1rem !important; }
+    
+    .field-name a { color: #FACC15 !important; font-size: 1.3rem !important; font-weight: 800 !important; text-decoration: none !important; display: block !important; text-transform: uppercase; letter-spacing: 1px; }
+    .field-name a:hover { color: #FEF08A !important; }
+    
+    .field-year { color: #9CA3AF !important; font-size: 1rem !important; font-weight: bold !important; background: #1F2937 !important; padding: 4px 12px !important; border-radius: 20px !important; display: inline-block !important; margin: 0 auto !important; }
+
+</style>
+{% endblock %}

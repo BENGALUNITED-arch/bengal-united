@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} | Bengal United Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#0A1A2F', accent: '#00ADEF', secondary: '#101C2C', textlight: '#F5F7FA' }, fontFamily: { heading: ['"Bebas Neue"', 'sans-serif'], body: ['Inter', 'sans-serif'], } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-primary text-textlight font-body overflow-x-hidden antialiased">
+
+    <nav class="fixed w-full z-50 bg-[#0A1A2F]/90 backdrop-blur-[10px] border-b border-white/10 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+            <a href="/" class="flex items-center gap-3">
+                {% if settings and settings.logo %}
+                    <img src="{{ settings.logo.url }}" alt="Club Logo" class="h-12 w-auto object-contain">
+                {% else %}
+                    <i class="fas fa-shield-alt text-4xl text-accent"></i>
+                {% endif %}
+                <span class="font-heading text-3xl tracking-wider text-white hidden md:block">BENGAL <span class="text-accent">UNITED</span></span>
+            </a>
+            <a href="{% url 'shop' %}" class="text-gray-300 hover:text-white font-bold uppercase tracking-widest text-sm flex items-center gap-2 transition-all">
+                <i class="fas fa-arrow-left"></i> Back to Store
+            </a>
+        </div>
+    </nav>
+
+    <main class="pt-32 pb-24 relative z-10 min-h-screen flex items-center">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="bg-secondary rounded-sm border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row">
+                
+                <div class="w-full lg:w-1/2 bg-[#0d1727] p-10 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-white/10">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="max-h-[500px] w-auto object-contain hover:scale-105 transition duration-500 drop-shadow-2xl">
+                    {% else %}
+                        <i class="fas fa-tshirt text-9xl text-gray-700"></i>
+                    {% endif %}
+                </div>
+
+                <div class="w-full lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center">
+                    <span class="text-accent text-sm font-bold uppercase tracking-widest mb-2">Official Merchandise</span>
+                    <h1 class="font-heading text-5xl md:text-6xl text-white mb-2">{{ product.name }}</h1>
+                    <p class="font-heading text-4xl text-accent mb-8">₹{{ product.price }}</p>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold uppercase tracking-widest mb-2">Select Size <span class="text-red-500">*</span></label>
+                            <select id="productSize" class="w-full bg-primary border border-white/20 text-white rounded-sm px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition">
+                                <option value="" disabled selected>Choose your size...</option>
+                                <option value="Small (S)">Small (S)</option>
+                                <option value="Medium (M)">Medium (M)</option>
+                                <option value="Large (L)">Large (L)</option>
+                                <option value="Extra Large (XL)">Extra Large (XL)</option>
+                                <option value="Double XL (XXL)">Double XL (XXL)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-400 text-sm font-bold uppercase tracking-widest mb-2">Delivery Address <span class="text-red-500">*</span></label>
+                            <textarea id="deliveryAddress" rows="3" placeholder="Enter your full address with pin code..." class="w-full bg-primary border border-white/20 text-white rounded-sm px-4 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition resize-none"></textarea>
+                        </div>
+
+                        <button onclick="sendOrder()" class="w-full bg-[linear-gradient(135deg,#25D366,#128C7E)] hover:scale-[1.02] shadow-[0_0_15px_rgba(37,211,102,0.4)] text-white font-heading text-2xl py-4 rounded-sm transition-all duration-300 mt-4 flex items-center justify-center gap-3">
+                            <i class="fab fa-whatsapp text-3xl"></i> PLACE ORDER VIA WHATSAPP
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function sendOrder() {
+            // Get the user's input
+            var size = document.getElementById("productSize").value;
+            var address = document.getElementById("deliveryAddress").value;
+            var phone = "{{ settings.whatsapp_number|default:'919830848589' }}";
+            var productName = "{{ product.name }}";
+            var price = "{{ product.price }}";
+
+            // Validate that they filled it out
+            if (size === "" || address.trim() === "") {
+                alert("⚠️ Please select a Size and enter your Delivery Address before ordering!");
+                return;
+            }
+
+            // Build the WhatsApp message
+            var message = "⚽ *NEW MERCH ORDER!* ⚽%0A%0A";
+            message += "👕 *Item:* " + productName + "%0A";
+            message += "💵 *Price:* ₹" + price + "%0A";
+            message += "📏 *Size:* " + size + "%0A";
+            message += "📍 *Address:* " + address + "%0A%0A";
+            message += "Please confirm my order and payment details. Thank you!";
+
+            // Open WhatsApp
+            window.open("https://wa.me/" + phone + "?text=" + message, "_blank");
+        }
+    </script>
+</body>
+</html>

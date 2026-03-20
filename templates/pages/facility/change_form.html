@@ -1,0 +1,109 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    /* ==========================================
+       CLEAN LABELS & INPUTS (NO GRID HACKS)
+    ========================================== */
+    /* Make the Jazzmin card look like our SaaS dashboard */
+    .card { background: #111827 !important; border: 1px solid #1F2937 !important; border-radius: 0.75rem !important; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4) !important; color: #E5E7EB !important; }
+    .card-header { border-bottom: 1px solid #1F2937 !important; background: transparent !important; }
+    
+    .form-group { margin-bottom: 1.5rem !important; }
+    .control-label { color: #9CA3AF !important; font-weight: 600 !important; margin-bottom: 0.5rem !important; text-transform: uppercase; font-size: 0.75rem !important; letter-spacing: 0.05em; }
+    
+    input.form-control, select.form-control, textarea.form-control, 
+    .vTextField, .vLargeTextField, .vDateField, .vTimeField, .vIntegerField, .vDecimalField {
+        background-color: #0F172A !important; border: 1px solid #1F2937 !important; color: #F3F4F6 !important; border-radius: 0.5rem !important; padding: 0.75rem !important; width: 100% !important;
+    }
+    input.form-control:focus, select.form-control:focus, textarea.form-control:focus {
+        border-color: #3B82F6 !important; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+    }
+
+    /* Hide the image field initially so it doesn't blink */
+    .field-image, .field-photo { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Find the main form row
+        const formRow = document.querySelector("form .row");
+        if (!formRow) return;
+
+        // 2. Shrink the main input column to 2/3 width
+        const mainCol = formRow.querySelector(".col-12.col-lg-9") || formRow.querySelector(".col-12");
+        if (mainCol) {
+            mainCol.className = "col-12 col-lg-8"; // Bootstrap 2/3 width
+        }
+
+        // 3. Create the Right Media Column (1/3 width)
+        const rightCol = document.createElement("div");
+        rightCol.className = "col-12 col-lg-4"; // Bootstrap 1/3 width
+        rightCol.innerHTML = `
+            <div class="bg-[#111827] border border-[#1F2937] p-8 rounded-xl shadow-lg h-fit sticky top-6 font-sans text-gray-200">
+                <h3 class="text-xl font-bold text-white mb-6 border-b border-[#1F2937] pb-4 flex items-center">
+                    <i class="fas fa-image text-purple-500 mr-3"></i> Media
+                </h3>
+                
+                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Upload Image</label>
+                
+                <div id="image-preview-box" class="w-full aspect-square md:aspect-video bg-[#0F172A] border-2 border-dashed border-[#374151] rounded-lg overflow-hidden flex items-center justify-center relative mb-6">
+                    <span id="preview-text" class="text-gray-500 text-sm flex flex-col items-center">
+                        <i class="fas fa-cloud-upload-alt text-3xl mb-2"></i> Preview
+                    </span>
+                    <img id="live-img" class="absolute inset-0 w-full h-full object-cover hidden" alt="Preview">
+                </div>
+
+                <div id="image-input-container"></div>
+            </div>
+        `;
+
+        // Add it safely INSIDE the form row
+        formRow.appendChild(rightCol);
+
+        // 4. Move the Django Image Field into the new box
+        const imageField = document.querySelector(".form-group.field-image, .form-group.field-photo");
+        const targetContainer = document.getElementById("image-input-container");
+        const previewImg = document.getElementById("live-img");
+        const previewText = document.getElementById("preview-text");
+
+        if (imageField && targetContainer) {
+            imageField.style.display = "block";
+            targetContainer.appendChild(imageField);
+
+            const fileInput = imageField.querySelector("input[type='file']");
+            const currentFileLink = imageField.querySelector("a"); 
+
+            // Show existing image if editing
+            if (currentFileLink && currentFileLink.href) {
+                previewImg.src = currentFileLink.href;
+                previewImg.classList.remove("hidden");
+                previewText.classList.add("hidden");
+            }
+
+            // Live Preview Listener
+            if (fileInput) {
+                fileInput.addEventListener("change", function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            previewImg.src = event.target.result;
+                            previewImg.classList.remove("hidden");
+                            previewText.classList.add("hidden");
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        }
+    });
+</script>
+{% endblock %}

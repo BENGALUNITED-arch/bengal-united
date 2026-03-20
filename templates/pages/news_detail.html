@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title }} | Bengal United</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#0A1A2F', accent: '#00ADEF', secondary: '#101C2C', textlight: '#F5F7FA' }, fontFamily: { heading: ['"Bebas Neue"', 'sans-serif'], body: ['Inter', 'sans-serif'], } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-primary text-textlight font-body overflow-x-hidden antialiased">
+
+    <nav class="fixed w-full z-50 bg-[#0A1A2F]/90 backdrop-blur-[10px] border-b border-white/10 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+            <a href="/" class="flex items-center gap-3">
+                {% if settings and settings.logo %}
+                    <img src="{{ settings.logo.url }}" alt="Club Logo" class="h-12 w-auto object-contain">
+                {% else %}
+                    <i class="fas fa-shield-alt text-4xl text-accent"></i>
+                {% endif %}
+                <span class="font-heading text-3xl tracking-wider text-white hidden md:block">BENGAL <span class="text-accent">UNITED</span></span>
+            </a>
+            <a href="/#news" class="text-gray-300 hover:text-white font-bold uppercase tracking-widest text-sm flex items-center gap-2 transition-all">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </nav>
+
+    <header class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden border-b border-white/10 flex items-center justify-center min-h-[50vh]">
+        {% if article.image %}
+            <div class="absolute inset-0 w-full h-full bg-cover bg-center opacity-40" style="background-image: url('{{ article.image.url }}');"></div>
+        {% endif %}
+        <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/80 to-transparent"></div>
+        
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-10">
+            <span class="inline-block px-4 py-1 bg-accent/20 text-accent font-bold uppercase tracking-widest text-sm rounded-sm mb-6 border border-accent/30">
+                {{ article.category }}
+            </span>
+            <h1 class="font-heading text-5xl md:text-7xl text-white leading-tight mb-6 drop-shadow-lg">{{ article.title }}</h1>
+            <div class="flex items-center justify-center gap-4 text-gray-400 font-semibold uppercase tracking-wider text-sm">
+                <span><i class="far fa-calendar-alt text-accent mr-2"></i> {{ article.publish_date|date:"F j, Y" }}</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-16 bg-transparent relative z-10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            {% if article.image %}
+                <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-full h-auto max-h-[600px] object-cover rounded-sm shadow-2xl mb-12 border border-white/10">
+            {% endif %}
+            
+            <div class="prose prose-invert prose-lg max-w-none text-gray-300 leading-relaxed font-light text-xl whitespace-pre-wrap">
+{{ article.content }}
+            </div>
+        </div>
+    </main>
+
+    <section class="py-24 bg-secondary border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="font-heading text-4xl text-white mb-10 border-l-4 border-accent pl-4">MORE UPDATES</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {% for recent in recent_news %}
+                <a href="{% url 'news_detail' recent.id %}" class="group bg-primary border border-white/5 hover:border-accent hover:-translate-y-2 transition-all duration-300 rounded-sm overflow-hidden block">
+                    <div class="h-48 overflow-hidden relative">
+                        {% if recent.image %}
+                            <img src="{{ recent.image.url }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        {% else %}
+                            <div class="w-full h-full bg-[#111827] flex items-center justify-center text-gray-600"><i class="fas fa-newspaper fa-2x"></i></div>
+                        {% endif %}
+                    </div>
+                    <div class="p-6">
+                        <span class="text-gray-500 text-xs font-bold uppercase tracking-widest">{{ recent.publish_date|date:"F j, Y" }}</span>
+                        <h3 class="font-heading text-xl text-white mt-2 group-hover:text-accent transition">{{ recent.title }}</h3>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-primary py-12 text-center text-sm text-gray-500 font-medium border-t border-white/10">
+        <p>© 2026 Bengal United Football Club. Built for Greatness.</p>
+    </footer>
+
+</body>
+</html>

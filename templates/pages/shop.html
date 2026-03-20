@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Store | Bengal United</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#0A1A2F', accent: '#00ADEF', secondary: '#101C2C', textlight: '#F5F7FA' }, fontFamily: { heading: ['"Bebas Neue"', 'sans-serif'], body: ['Inter', 'sans-serif'], } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>[x-cloak] { display: none !important; }</style>
+</head>
+
+<body class="bg-primary text-textlight font-body antialiased" x-data="{ mobileMenuOpen: false }">
+
+    <nav class="fixed w-full z-50 bg-[#0A1A2F]/90 backdrop-blur-md border-b border-white/10 h-20">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-full">
+            <a href="/" class="flex items-center gap-3">
+                <span class="font-heading text-2xl md:text-3xl tracking-wider text-white">BENGAL <span class="text-accent">UNITED</span></span>
+            </a>
+            
+            <div class="hidden lg:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-gray-300">
+                <a href="/" class="hover:text-white transition-all flex items-center gap-2"><i class="fas fa-arrow-left text-xs"></i> Back to Home</a>
+            </div>
+
+            <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden text-white text-3xl">
+                <i class="fas fa-bars" x-show="!mobileMenuOpen"></i>
+                <i class="fas fa-times" x-show="mobileMenuOpen" x-cloak></i>
+            </button>
+        </div>
+
+        <div x-show="mobileMenuOpen" x-cloak class="lg:hidden fixed inset-0 top-20 bg-primary/95 flex flex-col p-8 gap-6 text-center">
+            <a href="/" class="text-white text-2xl font-heading">HOME</a>
+        </div>
+    </nav>
+
+    <header class="pt-32 pb-16 bg-secondary text-center border-b border-white/5">
+        <h1 class="font-heading text-6xl text-white mb-2">OFFICIAL <span class="text-accent">STORE</span></h1>
+        <p class="text-gray-400">Exclusive kits and match-day gear.</p>
+    </header>
+
+    <main class="py-20 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in products %}
+            <div class="bg-primary p-6 rounded-sm border border-white/5 shadow-xl flex flex-col">
+                <div class="h-64 bg-secondary mb-4 rounded-sm flex items-center justify-center overflow-hidden border border-white/5">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="object-contain w-full h-full p-6 transition hover:scale-105">
+                    {% else %}
+                        <i class="fas fa-tshirt text-6xl text-gray-700"></i>
+                    {% endif %}
+                </div>
+                <h4 class="font-heading text-2xl mb-2 text-white">{{ product.name }}</h4>
+                <p class="text-accent font-heading text-2xl mb-6">₹{{ product.price }}</p>
+                <a href="{% url 'product_detail' product.id %}" class="mt-auto block text-center border-2 border-accent/40 text-accent hover:bg-accent hover:text-white py-3 font-heading text-xl tracking-widest transition rounded-sm">
+                    VIEW DETAILS
+                </a>
+            </div>
+            {% empty %}
+            <p class="col-span-full text-center text-gray-500 py-20">The store is currently being restocked!</p>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer class="bg-primary py-12 text-center text-xs text-gray-500 border-t border-white/10 pb-32 lg:pb-12">
+        <p>© 2026 Bengal United Football Club.</p>
+    </footer>
+
+    <div class="fixed bottom-0 left-0 w-full bg-[#0A1A2F]/95 backdrop-blur-md border-t border-white/10 z-50 lg:hidden flex justify-around items-center p-3">
+        <a href="/" class="flex flex-col items-center text-gray-400"><i class="fas fa-home text-xl"></i><span class="text-[9px] font-bold">HOME</span></a>
+        <a href="https://wa.me/919830848589" class="flex flex-col items-center text-[#25D366] -translate-y-4"><div class="bg-primary p-3 rounded-full border border-[#25D366]/30 shadow-lg"><i class="fab fa-whatsapp text-3xl"></i></div></a>
+        <a href="tel:919830848589" class="flex flex-col items-center text-gray-400"><i class="fas fa-phone-alt text-xl"></i><span class="text-[9px] font-bold">CALL</span></a>
+    </div>
+
+</body>
+</html>

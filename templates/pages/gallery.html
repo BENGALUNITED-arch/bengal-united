@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Gallery | Bengal United</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#0A1A2F', accent: '#00ADEF', secondary: '#101C2C', textlight: '#F5F7FA' }, fontFamily: { heading: ['"Bebas Neue"', 'sans-serif'], body: ['Inter', 'sans-serif'], } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
+<body class="bg-primary text-textlight font-body overflow-x-hidden antialiased" x-data="{ modalOpen: false, modalImg: '' }">
+
+    <div x-show="modalOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity duration-300" x-transition style="display: none;">
+        <button @click="modalOpen = false" class="absolute top-6 right-6 text-white hover:text-accent text-5xl focus:outline-none">&times;</button>
+        <img :src="modalImg" @click.away="modalOpen = false" class="max-w-[90%] max-h-[90vh] object-contain rounded-sm shadow-2xl">
+    </div>
+
+    <nav class="fixed w-full z-50 bg-[#0A1A2F]/90 backdrop-blur-[10px] border-b border-white/10 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+            <a href="/" class="flex items-center gap-3">
+                {% if settings and settings.logo %}
+                    <img src="{{ settings.logo.url }}" alt="Club Logo" class="h-12 w-auto object-contain">
+                {% else %}
+                    <i class="fas fa-shield-alt text-4xl text-accent"></i>
+                {% endif %}
+                <span class="font-heading text-3xl tracking-wider text-white hidden md:block">BENGAL <span class="text-accent">UNITED</span></span>
+            </a>
+            <a href="/" class="text-gray-300 hover:text-white font-bold uppercase tracking-widest text-sm flex items-center gap-2 transition-all">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <header class="relative pt-32 pb-16 bg-secondary border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="font-heading text-5xl md:text-7xl text-white mb-4">MATCH <span class="text-accent">GALLERY</span></h1>
+            <p class="text-gray-400 max-w-2xl mx-auto text-lg">Relive the best moments on the pitch. Matchday photos, training sessions, and behind the scenes.</p>
+        </div>
+    </header>
+
+    <main class="py-20 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
+            
+            {% if match_albums %}
+            <div>
+                <div class="border-b border-white/10 pb-4 mb-8">
+                    <h2 class="font-heading text-4xl text-accent tracking-wider"><i class="fas fa-trophy mr-3"></i>MATCH DAY</h2>
+                </div>
+                
+                {% for album in match_albums %}
+                <div class="mb-16">
+                    <h3 class="font-heading text-2xl text-white mb-1">{{ album.title }}</h3>
+                    <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-6">{{ album.date_created|date:"F j, Y" }}</p>
+
+                    <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+                        {% for photo in album.photos.all %}
+                            <div class="break-inside-avoid cursor-pointer group relative rounded-sm overflow-hidden border border-white/5 shadow-lg bg-secondary" @click="modalOpen = true; modalImg = '{{ photo.image.url }}'">
+                                <img src="{{ photo.image.url }}" class="w-full h-auto object-cover group-hover:scale-105 transition duration-700">
+                                <div class="absolute inset-0 bg-accent/0 group-hover:bg-accent/20 transition duration-300 flex items-center justify-center">
+                                    <i class="fas fa-expand text-white text-3xl opacity-0 group-hover:opacity-100 transition duration-300 drop-shadow-md"></i>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if practice_albums %}
+            <div>
+                <div class="border-b border-white/10 pb-4 mb-8">
+                    <h2 class="font-heading text-4xl text-accent tracking-wider"><i class="fas fa-running mr-3"></i>PRACTICE SESSIONS</h2>
+                </div>
+                
+                {% for album in practice_albums %}
+                <div class="mb-16">
+                    <h3 class="font-heading text-2xl text-white mb-1">{{ album.title }}</h3>
+                    <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-6">{{ album.date_created|date:"F j, Y" }}</p>
+
+                    <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+                        {% for photo in album.photos.all %}
+                            <div class="break-inside-avoid cursor-pointer group relative rounded-sm overflow-hidden border border-white/5 shadow-lg bg-secondary" @click="modalOpen = true; modalImg = '{{ photo.image.url }}'">
+                                <img src="{{ photo.image.url }}" class="w-full h-auto object-cover group-hover:scale-105 transition duration-700">
+                                <div class="absolute inset-0 bg-accent/0 group-hover:bg-accent/20 transition duration-300 flex items-center justify-center">
+                                    <i class="fas fa-expand text-white text-3xl opacity-0 group-hover:opacity-100 transition duration-300 drop-shadow-md"></i>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if not match_albums and not practice_albums and not bts_albums %}
+            <div class="text-center py-16 border-2 border-dashed border-white/10 rounded-sm">
+                <i class="fas fa-camera text-5xl text-gray-600 mb-4"></i>
+                <p class="text-gray-400 text-xl font-medium">No albums have been published yet.</p>
+            </div>
+            {% endif %}
+
+        </div>
+    </main>
+
+    <footer class="bg-primary py-12 text-center text-sm text-gray-500 font-medium border-t border-white/10">
+        <p>© 2026 Bengal United Football Club. Built for Greatness.</p>
+    </footer>
+
+</body>
+</html>
